@@ -1,5 +1,4 @@
 #include "main.h"
-#include "FD_functions.c"
 
 /**
  * main - Entry point
@@ -7,38 +6,49 @@
  * @argv: Array of arguments
  * Return: 0 on success, 1 on failure
  */
-
 int main(int argc, char **argv)
 {
 	int bytesRead, fd_from, fd_to;
-	char *file_from = argv[1], *file_to = argv[2];
-	long int wrote;
 
 	if (argc != 3)
 	{
 		exit(97);
 		fprintf(stderr, "Usage: cp file_from file_to\n");
 	}
-	fd_from = open(file_from, O_RDONLY);
+	fd_from = open(argv[1], O_RDONLY);
 
-	fd_dest(fd_from, file_from);
+	if (fd_from == -1)
+	{
+		exit(98);
+		dprintf(fd_from, "Error: Can't read from file %s\n", argv[1]);
+	}
+	fd_to = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0664);
 
-	fd_to = open(file_to, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-
-	fd_source(fd_to, file_to);
+	if (fd_to == -1)
+	{
+		exit(99);
+		dprintf(fd_to, "Error: Can't write to %s\n", argv[2]);
+	}
 	while ((bytesRead = read(fd_from, file_to, 1024)) != -1)
 	{
-		wrote = write(fd_to, file_to, bytesRead);
-		if (wrote == -1)
+		if (write(fd_to, file_to, bytesRead) == -1)
 		{
 			exit(99);
 			dprintf(fd_to, "Error: Can't write to %s\n", file_to);
 		}
 	}
-
-	close_dest(fd_from);
-	close_source(fd_to);
-
+	if (close(fd_from) == -1)
+	{
+		exit(100);
+		dprintf(fd_from, "Error: Can't close fd %d\n", fd_from);
+	}
+	else
+		close(fd_from);
+	if (close(fd_to) == -1)
+	{
+		exit(100);
+		dprintf(fd_to, "Error: Can't close fd %d\n", fd_to);
+	}
 	return (0);
 
 }
