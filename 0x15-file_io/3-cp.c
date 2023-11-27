@@ -29,12 +29,12 @@ int main(int argc, char **argv)
 		exit(99);
 		dprintf(fd_to, "Error: Can't write to %s\n", argv[2]);
 	}
-	while ((bytesRead = read(fd_from, file_to, 1024)) != -1)
+	while ((bytesRead = read(fd_from, argv[2], 1024)) != -1)
 	{
-		if (write(fd_to, file_to, bytesRead) == -1)
+		if (write(fd_to, argv[2], bytesRead) == -1)
 		{
 			exit(99);
-			dprintf(fd_to, "Error: Can't write to %s\n", file_to);
+			dprintf(fd_to, "Error: Can't write to %s\n", argv[2]);
 		}
 	}
 	if (close(fd_from) == -1)
